@@ -1,0 +1,389 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Adwords Brainstorming Tool</title>
+  <meta name="description" content="Use this tool to hone your pitches and brainstorm product ideas by imagining them as Google search ads.">
+
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+
+  <style>
+    html {
+      font-size:94%;
+    }
+    body {
+      background-color: hsl(48, 100%, 67%);
+    }
+    .navbar {
+      margin-bottom: 1rem;
+    }
+    .card-header {
+      background: #fff;
+    }
+    .projects {
+      padding-left: 0;
+    }
+    .project {
+      list-style-type: none; /* remove bullets */
+      background: #fff;
+    }
+    .project-links {
+      display: inline-block;
+      float: right;
+    }
+    .card {
+      border-width: 0;
+    }
+    .card-header {
+      border-width:  0;
+    }
+    .ad-preview-text {
+      font-size: 80%;
+    }
+    .ad-preview-title {
+      font-size: 95%;
+    }
+    .ad-preview-url {
+      font-size: 88%;
+    }
+    .instructions {
+      font-size: 80%;
+    }
+    .instructions > ul {
+      padding-left: 2em;
+    }
+
+    .alert-white {
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+  <!-- navbar -->
+  <div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light mb-1 pl-0 pr-0">
+      <a class="navbar-brand" href="#"><strong>Adwords Brainstorming Tool</strong></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+<!--           <li class="nav-item">
+            <a class="nav-link text-primary" href="https://www.goodi.sh">What are you working on?</a>
+          </li> -->
+        </ul>
+      </div>
+    </nav>
+  </div>
+  <!-- /navbar -->
+
+  <div class="container"> <!-- main container -->
+    <div class="row flex-xl"> <!-- main row -->
+  
+      <div class="col-md-6 col-xl-4 sidebar" id="sd"> <!-- main -->
+        <div class="card mb-3 shadow-sm text-light bg-dark"> <!-- adwords form-->
+          <form class="p-4">
+            <fieldset id="ad-form-fields" disabled>
+              <div class="form-group">
+                <label for="">Landing page</label>
+                <input type="url" class="form-control" id="landing-page-field" placeholder="Ex: www.example.com/books">
+                <div id="landing-page-hint" class="pt-3" style="display:none"><small>The landing page is the URL that you want people to reach after clicking your ad. It should match what your ad promotes.</small></div>
+              </div>
+              <div class="form-group">
+                <label for="">Headline 1</label>
+                <input type="text" class="form-control" id="headline-1-field" placeholder="New York Budget Hotel" maxlength="30">
+                <div id="headline-1-hint" class="pt-3" style="display:none"><small>Headlines can appear on the same or separate lines. Try to write them so that they make sense when read both together and separately.
+                Tip: Include one or two keywords in your headlines.</small></div>
+              </div>
+              <div class="form-group">
+                <label for="">Headline 2</label>
+                <input type="text" class="form-control" id="headline-2-field" placeholder="Best NY Hotel Rates in Seconds" maxlength="30">
+                <div id="headline-2-hint" class="pt-3" style="display:none"><small>Headlines can appear on the same or separate lines. Try to write them so that they make sense when read both together and separately.
+                Tip: Include one or two keywords in your headlines.</small></div>
+              </div>
+              <div class="form-group">
+                <label for="">Description</label>
+                <textarea class="form-control" id="description-field" rows="3" placeholder="Experience all the comforts of your home. Save with multi-day booking." maxlength="80"></textarea>
+                <div id="description-field-hint" class="pt-3" style="display:none">
+                  <small>Tips for writing your ad:
+                    <ul>
+                      <li>Use a clear call to action</li>
+                      <li>Include at least one keyword</li>
+                      <li>Capitalise the first letter of every word</li>
+                      <li>Include specific prices or promotions</li>
+                    </ul>
+                  </small>
+                </div>
+              </div>
+            </fieldset>
+          </form>
+        </div> <!-- /adwords form -->
+        <button class="btn btn-primary mb-3" id="export-to-csv" style="width:100%">Export ads to CSV</button>
+      </div> <!-- /main -->
+      <div class="col-md-6 col-xl-4" id="adwords-previews"> <!-- adwords preview column -->
+        <button class="btn btn-primary mb-3" id="new-preview" style="width:100%">&#65291;</button>
+
+        <!-- ad preview template -->
+        <div class="card alert alert-dismissible p-1 ad-preview" style="display: none">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <div class="card-body mt-4">
+            <h5 class="card-title ad-preview-title mb-1"><a href="#"><span class="headline-1" id="headline-1"></span> - <span class="headline-2" id="headline-2"></span></a></h5>
+            <p class="ad-preview-url mb-1"><span class="badge badge-secondary p-1 bg-success">Ad</span> <span class="text-success landing-page-url" id="landing-page-url"></span></p>
+            <hr class="my-2">
+            <p class="card-text ad-preview-text ad-description" id="ad-description"></p>
+          </div>
+        </div>
+        <!-- /ad preview template -->
+
+      </div> <!-- /adwords preview column -->
+      <div class="col-md-12 col-xl-4 sidebar"> <!-- right sidebar -->
+        <div class="alerts">
+        </div> <!-- sidebar card -->
+        <div class="card mb-3 shadow-sm text-light bg-dark"> <!-- sidebar card -->
+          <div class="card-body">
+            <h5 class="card-title">How to use this tool</h5>
+            <p class="card-text">Use this tool to hone your pitches and brainstorm product ideas by imagining them as Google search ads.</p>
+            <div class="instructions">
+              <ul>
+                <li class="mb-2">Add additional adverts with the &#65291; button.</li>
+                <li class="mb-2">The topmost card is editable.</li>
+                <li class="mb-2">Move an ad to the top by clicking on it.</li>
+                <li class="mb-2">Your ads will be stored in the browser so you can come back to them later.</li>
+              </ul>
+            </div>
+          </div>
+        </div> <!-- sidebar card -->
+        <div class="alert alert-white alert-dismissible text-dark pt-4" role="alert"> <!-- cookie alert -->
+            <h5 class="alert-heading">Cookies</h5>
+            <p>This tool requires the use of cookies. By using this tool, you agree to its use of cookies.</p>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+        </div> <!-- cookie alert -->
+      </div> <!-- /right sidebar -->
+    </div> <!-- /main row -->
+  </div> <!-- /main container -->
+<script type="text/javascript">
+  $(document).ready(function(){
+    function set_cookie(value){
+      Cookies.set('googleads', value, { expires: 500, path: '' })
+    }
+
+    function replace_ad_text(input_field, preview_element_id) {
+      var content = input_field.val()
+      if(content.length > 0) {
+        $(preview_element_id).text(content)
+      } else {
+        $(preview_element_id).text(input_field.attr('placeholder'))
+      }
+    }
+
+    function change_preview_appearance_on_hover(){
+      $(".ad-preview").each(function(){
+        $(this).hover(function(){
+          $(this).css( 'cursor', 'pointer' )
+        }, function(){
+          $(this).css( 'cursor', 'default' )
+        })
+      })
+    }
+
+    function set_shadows(){
+      $(".ad-preview").removeClass('shadow')
+      $(".ad-preview:first").addClass('shadow')
+    }
+
+    function update_form_fields(){
+      var fields_and_preview_ids = {
+        "#headline-1-field":"#headline-1",
+        "#headline-2-field":"#headline-2",
+        "#landing-page-field":"#landing-page-url",
+        "#description-field":"#ad-description"
+      }
+
+      for(var key in fields_and_preview_ids) {
+        (function(key){
+          if(!(~$(key).attr('placeholder').indexOf($(fields_and_preview_ids[key]).text()))) {
+            $("input"+key).val($(fields_and_preview_ids[key]).text())
+            $("textarea"+key).val($(fields_and_preview_ids[key]).text())
+          } else {
+            $("input"+key).val("")
+            $("textarea"+key).val("")
+          }
+        }).call(this, key)
+      }
+    }
+
+    function make_ad_move_on_click(preview){
+      preview.click(function(e){
+        $(this).insertAfter("#new-preview")
+        set_shadows()
+        $(this).animate({ top: -15 }, 200, function(){
+          $(this).css({'top': '0'})
+          update_form_fields()
+        })
+      })
+    }
+
+    function new_preview(){
+      var preview = $(".ad-preview:first").clone()
+      preview.on('closed.bs.alert', function(){
+        set_shadows();
+      })
+      make_ad_move_on_click(preview)
+      preview.insertAfter("#new-preview").show()
+      $("#landing-page-url").text(($('#landing-page-field').attr('placeholder').replace('Ex: ','')))
+      $("#headline-1").text($('#headline-1-field').attr('placeholder'))
+      $("#headline-2").text($('#headline-2-field').attr('placeholder'))
+      $("#ad-description").text($('#description-field').attr('placeholder'))
+      change_preview_appearance_on_hover()  
+      set_shadows();
+     }
+
+    function new_preview_from(row){
+      var preview = $(".ad-preview:first").clone()
+      preview.on('closed.bs.alert', function(){
+        set_shadows();
+      })
+      make_ad_move_on_click(preview)
+      preview.insertAfter("#new-preview").show()
+      $("#landing-page-url").text(row['landing-page-url'])
+      $("#headline-1").text(row['headline-1'])
+      $("#headline-2").text(row['headline-2'])
+      $("#ad-description").text(row['ad-description'])
+      change_preview_appearance_on_hover()  
+      set_shadows();
+    }
+
+    // Watch ads for updates 
+    var mutationObserver = new MutationObserver(function(mutations) {
+      if($(".ad-preview").length <= 1) {
+        document.getElementById("ad-form-fields").setAttribute('disabled', 'disabled')
+      } else {
+        $("#ad-form-fields").removeProp('disabled')
+        document.getElementById("ad-form-fields").removeAttribute('disabled')
+      }
+      var data = $.map($(".ad-preview"), function(el){
+       return {
+        'landing-page-url': $('.landing-page-url', el).text(),
+        'headline-1': $('.headline-1', el).text(),
+        'headline-2': $('.headline-2', el).text(),
+        'ad-description': $('.ad-description', el).text()
+       }
+      })
+      set_cookie(JSON.stringify(data))
+    })
+
+    // Starts listening for changes in the root HTML element of the page.
+    mutationObserver.observe(document.getElementById('adwords-previews'), {
+      attributes: true,
+      characterData: true,
+      childList: true,
+      subtree: true,
+      attributeOldValue: true,
+      characterDataOldValue: true
+    });
+
+    // set up
+    if(Cookies.get('googleads')) {
+      var cookie_rows = JSON.parse(Cookies.get('googleads'))
+      cookie_rows.slice(0,cookie_rows.length-1).reverse().forEach(function(row){
+        new_preview_from(row)
+      })
+    } else {
+      new_preview()
+    }
+
+    $("#landing-page-field").keyup(function(){
+      var content = $(this).val()
+      if(content.length > 0) {
+        var words = ['https://', 'http://', 'www.'] 
+        words.forEach(function(i){
+          content = content.replace(i,'');
+        })
+        $("#landing-page-url").text('www.'+content)
+      } else {
+        var url_placeholder = $(this).attr('placeholder').replace('Ex: ','')
+        $("#landing-page-url").text(url_placeholder)
+      }
+    });
+
+    $("#headline-1-field").keyup(function(){
+      replace_ad_text($(this), '#headline-1')
+    });
+
+    $("#headline-2-field").keyup(function(){
+      replace_ad_text($(this), '#headline-2')
+    });
+
+    $("#description-field").keyup(function(){
+      var content = $(this).val()
+      if(content.length > 0) {
+        $("#ad-description").text(content)
+      } else {
+        $("#ad-description").text($(this).attr('placeholder'))
+      }
+    });
+
+    var fields_and_hints = {
+      "#headline-1-field":"#headline-1-hint",
+      "#headline-2-field":"#headline-2-hint",
+      "#landing-page-field":"#landing-page-hint",
+      "#description-field":"#description-field-hint"
+    }
+
+    for (var key in fields_and_hints) {
+      (function(key){
+        $(key).focus(function(){
+          $(fields_and_hints[key]).show()
+        })
+        $(key).focusout(function(){
+          $(fields_and_hints[key]).hide()
+        })
+      }).call(this,key)
+    }
+
+    $("#new-preview").click(function(){
+      new_preview()
+      update_form_fields()
+    })
+
+    function quoted(text) {
+      return '"' + text + '"'
+    }
+
+    // CSV
+    $("#export-to-csv").mousedown(function(event){
+      event.preventDefault()
+      const rows = $('.ad-preview').map(function(){
+        return [[
+          quoted($('#landing-page-url', this).text()),
+          quoted($('#headline-1',this).text()),
+          quoted($('#headline-2',this).text()),
+          quoted($('#ad-description',this).text())
+        ]]}).toArray()
+      let csvContent = "data:text/csv;charset=utf-8,"
+      csvContent += ["Landing page", "Headline 1", "Headline 2", "Description"] + "\r\n";
+      rows.slice(0, -1).forEach(function(rowArray){
+         let row = rowArray.join(",")
+         csvContent += row + "\r\n"
+      })
+      var encodedUri = encodeURI(csvContent)
+      var link = document.createElement("a")
+      link.setAttribute("href", encodedUri)
+      link.setAttribute("download", "adwords_brainstorming.csv")
+      document.body.appendChild(link) // Required for FF
+
+      link.click() // This will download the data file named "my_data.csv".
+      $(link).remove()
+    })
+  });
+</script>
+
+</body>
+</html>
